@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -47,8 +48,11 @@ public class BoardController {
         return "list";
     }
 
-    @GetMapping("/{id}")
-    public String getID() {
-        return "index";
+    @GetMapping("/{id}") // url 경로에 변수 처리
+    public String findById(@PathVariable Long id/*이 변수에 url 변수 담음*/, Model model) {
+        boardService.updateHits(id);
+        BoardDTO boardDTO = boardService.findById(id);
+        model.addAttribute("board", boardDTO);
+        return "detail";
     }
 }

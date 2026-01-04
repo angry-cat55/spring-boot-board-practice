@@ -4,9 +4,12 @@ import com.example.demo.dto.BoardDTO;
 import com.example.demo.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Controller
 // 해당 클래스는 웹 요청을 처리하는 컨트롤러임을 명시하는 어노테이션.
@@ -34,6 +37,18 @@ public class BoardController {
         // 스프링이 BoardDTO 기본 생성자를 호출 -> 빈 객체 생성 -> 데이터 바인딩 -> 객체 사용.
         System.out.println("boardDTO = " + boardDTO);
         boardService.save(boardDTO);
+        return "redirect:/board/";
+    }
+
+    @GetMapping("/")
+    public String findAll(Model model) {
+        List<BoardDTO> boardDTOList = boardService.findALL();
+        model.addAttribute("boardList", boardDTOList);
+        return "list";
+    }
+
+    @GetMapping("/{id}")
+    public String getID() {
         return "index";
     }
 }

@@ -1,8 +1,12 @@
 package com.example.demo.dto;
 
+import com.example.demo.entity.BoardEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter // getBoardWriter() 등 생성
 @Setter // setBoardWriter() 등 생성
@@ -15,4 +19,22 @@ public class BoardDTO {
     private String  boardContents; // 내용
     private int     boardHits; // 조회수
     private String  boardCreatedAt; // 작성일자
+
+    private String dateFormat(LocalDateTime date) {
+        if (date == null)
+            return null;
+        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    }
+
+    public static BoardDTO toBoardDTO(BoardEntity boardEntity) {
+        BoardDTO boardDTO = new BoardDTO();
+        boardDTO.setId(boardEntity.getId());
+        boardDTO.setBoardWriter(boardEntity.getBoardWriter());
+        boardDTO.setBoardTitle(boardEntity.getBoardTitle());
+        boardDTO.setBoardPass(boardEntity.getBoardPass());
+        boardDTO.setBoardContents(boardEntity.getBoardContents());
+        boardDTO.setBoardHits(boardEntity.getBoardHits());
+        boardDTO.setBoardCreatedAt(boardDTO.dateFormat(boardEntity.getCreatedAt()));
+        return boardDTO;
+    }
 }

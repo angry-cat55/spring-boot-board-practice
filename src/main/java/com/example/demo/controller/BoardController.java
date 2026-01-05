@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.BoardDTO;
+import com.example.demo.repository.BoardRepository;
 import com.example.demo.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -22,6 +24,8 @@ import java.util.List;
 // 해당 어노테이션을 사용할 경우, 내부의 모든 메서드 앞에 '/board'라는 주소가 자동으로 추가됨.
 public class BoardController {
     private final BoardService boardService;
+    private final BoardRepository boardRepository;
+
     // 객체 생성 (@RequestArgsConstructor 필요)
     @GetMapping("/save")
     // 'board/save'라는 주소로 GET 방식의 요청이 오면 하단의 saveForm이 호출됨.
@@ -60,5 +64,23 @@ public class BoardController {
     public String delete(@PathVariable Long id) {
         boardService.delete(id);
         return "redirect:/board/";
+    }
+
+    @GetMapping("/update/{id}")
+    public String updateForm(@PathVariable Long id, Model model) {
+        BoardDTO boardDTO = boardService.findById(id);
+        model.addAttribute("board", boardDTO);
+        return "update";
+    }
+
+    @PostMapping("/update")
+    public String update(BoardDTO boardDTO, RedirectAttributes redirectAttributes) {
+        try {
+            boardService.update(boardDTO);
+            return "redirect:/board/" + boardDTO.getId();
+        } catch(IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/board/update/" + boardDTO.getId();
+        }
     }
 }

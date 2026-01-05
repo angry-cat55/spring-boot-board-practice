@@ -51,4 +51,18 @@ public class BoardService {
     public void delete(Long id) {
         boardRepository.deleteById(id);
     }
+
+    @Transactional
+    // 트랜잭션 어노테이션이 붙은 메서드는, 불러온 Entity 객체를 영속성 컨텍스트에 등록하고 감시를 시작한다.
+    // 반약 트랜잭션이 종료됐을 때 객체 데이터의 변화가 있을 경우, 자동으로 UPDATE 쿼리를 DB에 전송한다.
+    public void update(BoardDTO boardDTO) {
+        BoardEntity boardEntity = boardRepository.findById(boardDTO.getId()).orElseThrow(() ->
+                new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+        // Optional<> 로 반환하는 방식말고 다른 방식(예외 처리도 한번에 하는 코드)
+        if (boardEntity.getBoardPass().equals(boardDTO.getUpdatePass())) {
+            boardEntity.update(boardDTO);
+        } else {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+    }
 }
